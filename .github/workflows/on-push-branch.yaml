@@ -12,15 +12,18 @@ jobs:
       matrix:
         node-version: [10.x, 12.x, 14.x]
     steps:
-      - name: Code checkout
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{matrix.node-version}}
+
+      - name: Setup Node.js ${{matrix.node-version}}
         uses: actions/setup-node@v1
         with:
           node-version: ${{matrix.node-version}}
+
       - name: Install packages
-      - run: yarn install
+        run: yarn install
+
       - name: Run quality controls
-      - run: yarn quality-checks
+        run: yarn quality-checks
+
       - name: Run tests
-      - run: yarn test
+        run: yarn test
