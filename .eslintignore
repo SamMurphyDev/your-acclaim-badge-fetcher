@@ -1,0 +1,3 @@
+node_modules/
+dist/
+manual-integration-test-harness.js
