@@ -1,0 +1,15 @@
+<html>
+  <body>
+    {{#images.340}}
+      <img class="cr-badges-full-badge__img" src="{{images.340}}" />      
+    {{/images.340}}
+    <div class="cr-badges-badge-issuer__entity">
+      <a href="{{organisationUrl}}"></a>
+    </div>
+    <ol>
+      {{#skills}}
+        <li class="cr-badges-badge-skills__skill--linked"><a href="{{{url}}}" title="{{name}}">{{name}}</a></li>
+      {{/skills}}
+    </ol>
+  </body>
+</html>

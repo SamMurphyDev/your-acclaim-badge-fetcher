@@ -1,0 +1,12 @@
+<html>
+  <body>
+    {{#badges}}
+    <a class="cr-public-earned-badge-grid-item" {{#title}}title="{{ title }}"{{/title}} href="{{{url}}}">
+      <div class="cr-standard-grid-item-content__subtitle">{{organisation}}</div>
+      {{#images.110}}
+        <img src="{{images.110}}" />
+      {{/images.110}}
+    </a>
+    {{/badges}}
+  </body>
+</html>
