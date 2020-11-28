@@ -1,7 +1,0 @@
-{
-  "hooks": {
-    "pre-commit": "yarn quality-checks",
-    "pre-push": "yarn test:coverage",
-    "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-  }
-}
