@@ -16,7 +16,7 @@
   "license": "MIT",
   "private": false,
   "engines": {
-    "node": ">= 10.23.0"
+    "node": ">= 12.20.0"
   },
   "scripts": {
     "lint": "eslint . --config .eslintrc --fix",
@@ -43,26 +43,26 @@
     "@semantic-release/release-notes-generator": "^9.0.1",
     "@types/jsdom": "^16.2.5",
     "@types/mustache": "^4.0.1",
-    "@typescript-eslint/eslint-plugin": "^4.6.1",
-    "@typescript-eslint/parser": "^4.6.1",
-    "eslint": "^7.12.1",
+    "@typescript-eslint/eslint-plugin": "^4.8.2",
+    "@typescript-eslint/parser": "^4.8.2",
+    "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-unused-imports": "^1.0.0",
+    "eslint-plugin-unused-imports": "^1.0.1",
     "husky": "^4.3.0",
     "jest": "^26.6.3",
     "mustache": "^4.0.1",
-    "prettier": "^2.1.2",
+    "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0",
-    "rollup": "^2.33.1",
+    "rollup": "^2.33.3",
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.29.0",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.0.0",
     "type-coverage": "^2.14.5",
-    "typescript": "^4.0.5"
+    "typescript": "^4.1.2"
   },
   "typeCoverage": {
     "atLeast": 100

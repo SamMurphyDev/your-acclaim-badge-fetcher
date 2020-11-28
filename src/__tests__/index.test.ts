@@ -224,9 +224,9 @@ describe('Scraping of Your Acclaims badge data', () => {
 
     expect.assertions(1);
 
-    const result = (await fetchBadges('', true)) as BadgeFull[];
+    const [result] = (await fetchBadges('', true)) as BadgeFull[];
 
-    expect(result[0].images[340]).toBeUndefined();
+    expect(result.images[340]).toBeUndefined();
   });
 
   it('should have an undefined name for a skill if link name is not present', async () => {
@@ -259,8 +259,37 @@ describe('Scraping of Your Acclaims badge data', () => {
 
     expect.assertions(1);
 
-    const result = (await fetchBadges('', true)) as BadgeFull[];
+    const [result] = (await fetchBadges('', true)) as BadgeFull[];
 
-    expect(result[0].skills[0].name).toEqual('');
+    expect(result.skills[0].name).toEqual('');
+  });
+
+  it('should fetch partial badge info if badge page is invalid', async () => {
+    const listContext = [
+      {
+        title: 'badge-1',
+        images: { 110: 'badge-1-img' },
+        url: '/badge-1-href',
+        organisation: 'badge-1-organisation',
+      },
+    ];
+
+    const getMock: typeof mockableFunction = async (url) => ({
+      data:
+        url === `${baseUrl}/users//badges`
+          ? await badgeListPage(listContext)
+          : '<html></html>',
+    });
+
+    // @ts-ignore
+    axios.get.mockImplementation(getMock);
+
+    expect.assertions(3);
+
+    const [result] = (await fetchBadges('', true)) as BadgeFull[];
+
+    expect(result.images['340']).toBeUndefined();
+    expect(result.organisationUrl).toBeUndefined();
+    expect(result.skills).toEqual([]);
   });
 });

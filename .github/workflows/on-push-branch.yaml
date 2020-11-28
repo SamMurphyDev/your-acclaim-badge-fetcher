@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [14.x]
     steps:
       - uses: actions/checkout@v2
 
@@ -25,5 +25,5 @@ jobs:
       - name: Run quality controls
         run: yarn quality-checks
 
-      - name: Run tests
-        run: yarn test
+      - name: Run tests with coverage
+        run: yarn test:coverage

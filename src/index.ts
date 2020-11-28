@@ -1,6 +1,6 @@
+import { JSDOM } from 'jsdom';
 import axios from 'axios';
 import deepmerge from 'deepmerge';
-import { JSDOM } from 'jsdom';
 
 export const baseUrl = 'https://www.youracclaim.com';
 
@@ -17,7 +17,7 @@ export interface BadgeFull extends Badge {
   images: Badge['images'] & {
     340: string | undefined;
   };
-  organisationUrl: string;
+  organisationUrl?: string;
   skills: ReadonlyArray<Skill>;
 }
 
@@ -44,34 +44,34 @@ const cleanText = (text?: string) => (text ? text.replace(/\n/g, '') : text);
 const extractAdditionalInformation = (
   url: string,
   badge: HTMLHtmlElement
-): PartialBadge => ({
-  images: {
-    '340':
-      classSelector(badge, 'img', 'cr-badges-full-badge__img')?.getAttribute(
-        'src'
-      ) ?? undefined,
-  },
-  organisationUrl: `${url}${classSelector(
-    badge,
-    'div',
-    'cr-badges-badge-issuer__entity'
-  )
+): PartialBadge => {
+  const orgUri = classSelector(badge, 'div', 'cr-badges-badge-issuer__entity')
     ?.querySelector('a')
-    ?.getAttribute('href')}`,
-  skills: Array.from(badge.querySelectorAll('li'))
-    .filter((value) =>
-      value.classList.contains('cr-badges-badge-skills__skill--linked')
-    )
-    .map(
-      (value): Skill => {
-        const link = value.querySelector('a');
-        return {
-          name: cleanText(link?.innerHTML),
-          url: `${baseUrl}${link?.getAttribute('href')}`,
-        };
-      }
-    ),
-});
+    ?.getAttribute('href');
+
+  return {
+    images: {
+      '340':
+        classSelector(badge, 'img', 'cr-badges-full-badge__img')?.getAttribute(
+          'src'
+        ) ?? undefined,
+    },
+    organisationUrl: orgUri ? `${url}${orgUri}` : undefined,
+    skills: Array.from(badge.querySelectorAll('li'))
+      .filter((value) =>
+        value.classList.contains('cr-badges-badge-skills__skill--linked')
+      )
+      .map(
+        (value): Skill => {
+          const link = value.querySelector('a');
+          return {
+            name: cleanText(link?.innerHTML),
+            url: `${baseUrl}${link?.getAttribute('href')}`,
+          };
+        }
+      ),
+  };
+};
 
 // Change to use a function union with narrow types when they fix
 // https://github.com/microsoft/TypeScript/issues/19360
@@ -83,30 +83,30 @@ type ExtractorBadge = (
 const extractInformationFromBadge: ExtractorBadge = (
   url: string,
   additionalMetaData: boolean
-) => async (badge: HTMLAnchorElement) =>
-  deepmerge(
-    {
-      title: badge.getAttribute('title') ?? undefined,
-      url: `${url}${badge.getAttribute('href')}`,
-      images: {
-        110: badge.querySelector('img')?.getAttribute('src') ?? undefined,
-      },
-      organisation: cleanText(
-        classSelector(badge, 'div', 'cr-standard-grid-item-content__subtitle')
-          ?.innerHTML
-      ),
+) => async (badge: HTMLAnchorElement) => {
+  const baseInformation = {
+    title: badge.getAttribute('title') ?? undefined,
+    url: `${url}${badge.getAttribute('href')}`,
+    images: {
+      110: badge.querySelector('img')?.getAttribute('src') ?? undefined,
     },
-    additionalMetaData
-      ? extractAdditionalInformation(
-          url,
-          <HTMLHtmlElement>(
-            new JSDOM(
-              (await fetchPage(`${url}${badge.getAttribute('href')}`)).data
-            ).window.document.querySelector('html')
-          )
-        )
-      : {}
-  );
+    organisation: cleanText(
+      classSelector(badge, 'div', 'cr-standard-grid-item-content__subtitle')
+        ?.innerHTML
+    ),
+  };
+
+  const htmlRoot = new JSDOM(
+    (await fetchPage(`${url}${badge.getAttribute('href')}`)).data
+  ).window.document.querySelector('html');
+
+  const additionalInformation =
+    additionalMetaData && htmlRoot !== null
+      ? extractAdditionalInformation(url, htmlRoot)
+      : {};
+
+  return deepmerge(baseInformation, additionalInformation);
+};
 
 const fetchPage = async (url: string) =>
   axios.get<string>(url, {
@@ -134,6 +134,6 @@ export const fetchBadges = async (
       .filter((value) =>
         value.classList.contains('cr-public-earned-badge-grid-item')
       )
-      .map(await extractInformationFromBadge(baseUrl, additionalMetaData))
+      .map(extractInformationFromBadge(baseUrl, additionalMetaData))
   );
 };
